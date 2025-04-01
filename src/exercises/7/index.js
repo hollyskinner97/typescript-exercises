@@ -1,3 +1,4 @@
+"use strict";
 /*
 
 Intro:
@@ -23,32 +24,17 @@ Exercise:
     specified.
 
 */
-
-interface User {
-    type: 'user';
-    name: string;
-    age: number;
-    occupation: string;
+exports.__esModule = true;
+exports.swap = void 0;
+function logUser(user) {
+    var pos = users.indexOf(user) + 1;
+    console.log(" - #".concat(pos, " User: ").concat(user.name, ", ").concat(user.age, ", ").concat(user.occupation));
 }
-
-interface Admin {
-    type: 'admin';
-    name: string;
-    age: number;
-    role: string;
+function logAdmin(admin) {
+    var pos = admins.indexOf(admin) + 1;
+    console.log(" - #".concat(pos, " Admin: ").concat(admin.name, ", ").concat(admin.age, ", ").concat(admin.role));
 }
-
-function logUser(user: User) {
-    const pos = users.indexOf(user) + 1;
-    console.log(` - #${pos} User: ${user.name}, ${user.age}, ${user.occupation}`);
-}
-
-function logAdmin(admin: Admin) {
-    const pos = admins.indexOf(admin) + 1;
-    console.log(` - #${pos} Admin: ${admin.name}, ${admin.age}, ${admin.role}`);
-}
-
-const admins: Admin[] = [
+var admins = [
     {
         type: 'admin',
         name: 'Will Bruces',
@@ -62,8 +48,7 @@ const admins: Admin[] = [
         role: 'Steve'
     }
 ];
-
-const users: User[] = [
+var users = [
     {
         type: 'user',
         name: 'Moses',
@@ -77,48 +62,41 @@ const users: User[] = [
         occupation: 'Ordinary person'
     }
 ];
-
-export function swap<T1, T2>(v1: T1, v2: T2): [T2, T1] {
+function swap(v1, v2) {
     return [v2, v1];
 }
-
+exports.swap = swap;
 function test1() {
     console.log('test1:');
-    const [secondUser, firstAdmin] = swap(admins[0], users[1]);
+    var _a = swap(admins[0], users[1]), secondUser = _a[0], firstAdmin = _a[1];
     logUser(secondUser);
     logAdmin(firstAdmin);
 }
-
 function test2() {
     console.log('test2:');
-    const [secondAdmin, firstUser] = swap(users[0], admins[1]);
+    var _a = swap(users[0], admins[1]), secondAdmin = _a[0], firstUser = _a[1];
     logAdmin(secondAdmin);
     logUser(firstUser);
 }
-
 function test3() {
     console.log('test3:');
-    const [secondUser, firstUser] = swap(users[0], users[1]);
+    var _a = swap(users[0], users[1]), secondUser = _a[0], firstUser = _a[1];
     logUser(secondUser);
     logUser(firstUser);
 }
-
 function test4() {
     console.log('test4:');
-    const [firstAdmin, secondAdmin] = swap(admins[1], admins[0]);
+    var _a = swap(admins[1], admins[0]), firstAdmin = _a[0], secondAdmin = _a[1];
     logAdmin(firstAdmin);
     logAdmin(secondAdmin);
 }
-
 function test5() {
     console.log('test5:');
-    const [stringValue, numericValue] = swap(123, 'Hello World');
-    console.log(` - String: ${stringValue}`);
-    console.log(` - Numeric: ${numericValue}`);
+    var _a = swap(123, 'Hello World'), stringValue = _a[0], numericValue = _a[1];
+    console.log(" - String: ".concat(stringValue));
+    console.log(" - Numeric: ".concat(numericValue));
 }
-
-[test1, test2, test3, test4, test5].forEach((test) => test());
-
+[test1, test2, test3, test4, test5].forEach(function (test) { return test(); });
 // In case you are stuck:
 // https://www.typescriptlang.org/docs/handbook/2/objects.html#tuple-types
 // https://www.typescriptlang.org/docs/handbook/2/generics.html
