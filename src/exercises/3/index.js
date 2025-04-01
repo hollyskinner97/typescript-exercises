@@ -1,3 +1,4 @@
+"use strict";
 /*
 
 Intro:
@@ -15,22 +16,9 @@ Exercise:
     the input: occupation for User and role for Admin.
 
 */
-
-interface User {
-    name: string;
-    age: number;
-    occupation: string;
-}
-
-interface Admin {
-    name: string;
-    age: number;
-    role: string;
-}
-
-export type Person = User | Admin;
-
-export const persons: Person[] = [
+exports.__esModule = true;
+exports.logPerson = exports.persons = void 0;
+exports.persons = [
     {
         name: 'Max Mustermann',
         age: 25,
@@ -52,18 +40,17 @@ export const persons: Person[] = [
         role: 'World saver'
     }
 ];
-
-export function logPerson(person: Person) {
-    let additionalInformation: string;
+function logPerson(person) {
+    var additionalInformation;
     if ('role' in person) {
         additionalInformation = person.role;
-    } else {
+    }
+    else {
         additionalInformation = person.occupation;
     }
-    console.log(` - ${person.name}, ${person.age}, ${additionalInformation}`);
+    console.log(" - ".concat(person.name, ", ").concat(person.age, ", ").concat(additionalInformation));
 }
-
-persons.forEach(logPerson);
-
+exports.logPerson = logPerson;
+exports.persons.forEach(logPerson);
 // In case you are stuck:
 // https://www.typescriptlang.org/docs/handbook/2/narrowing.html#the-in-operator-narrowing
