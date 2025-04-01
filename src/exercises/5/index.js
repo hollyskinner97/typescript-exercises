@@ -1,3 +1,4 @@
+"use strict";
 /*
 
 Intro:
@@ -20,25 +21,10 @@ Higher difficulty bonus exercise:
     Exclude "type" from filter criteria.
 
 */
-
-interface User {
-    type: 'user';
-    name: string;
-    age: number;
-    occupation: string;
-}
-
-interface Admin {
-    type: 'admin';
-    name: string;
-    age: number;
-    role: string;
-}
-
-export type Person = User | Admin;
-
-export const persons: Person[] = [
-    {type: 'user', name: 'Max Mustermann', age: 25, occupation: 'Chimney sweep'},
+exports.__esModule = true;
+exports.filterUsers = exports.logPerson = exports.isUser = exports.isAdmin = exports.persons = void 0;
+exports.persons = [
+    { type: 'user', name: 'Max Mustermann', age: 25, occupation: 'Chimney sweep' },
     {
         type: 'admin',
         name: 'Jane Doe',
@@ -70,36 +56,34 @@ export const persons: Person[] = [
         role: 'Administrator'
     }
 ];
-
-export const isAdmin = (person: Person): person is Admin => person.type === 'admin';
-export const isUser = (person: Person): person is User => person.type === 'user';
-
-export function logPerson(person: Person) {
-    let additionalInformation = '';
-    if (isAdmin(person)) {
+var isAdmin = function (person) { return person.type === 'admin'; };
+exports.isAdmin = isAdmin;
+var isUser = function (person) { return person.type === 'user'; };
+exports.isUser = isUser;
+function logPerson(person) {
+    var additionalInformation = '';
+    if ((0, exports.isAdmin)(person)) {
         additionalInformation = person.role;
     }
-    if (isUser(person)) {
+    if ((0, exports.isUser)(person)) {
         additionalInformation = person.occupation;
     }
-    console.log(` - ${person.name}, ${person.age}, ${additionalInformation}`);
+    console.log(" - ".concat(person.name, ", ").concat(person.age, ", ").concat(additionalInformation));
 }
-
-export function filterUsers(persons: Person[], criteria: Partial<Omit<User, 'type'>>): User[] {
-    return persons.filter(isUser).filter((user) => {
-        const criteriaKeys = Object.keys(criteria) as (keyof Omit<User, 'type'>)[];
-        return criteriaKeys.every((fieldName) => {
+exports.logPerson = logPerson;
+function filterUsers(persons, criteria) {
+    return persons.filter(exports.isUser).filter(function (user) {
+        var criteriaKeys = Object.keys(criteria);
+        return criteriaKeys.every(function (fieldName) {
             return user[fieldName] === criteria[fieldName];
         });
     });
 }
-
+exports.filterUsers = filterUsers;
 console.log('Users of age 23:');
-
-filterUsers(persons, {
+filterUsers(exports.persons, {
     age: 23
 }).forEach(logPerson);
-
 // In case you are stuck:
 // https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype
 // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types
