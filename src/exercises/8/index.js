@@ -1,3 +1,4 @@
+"use strict";
 /*
 
 Intro:
@@ -16,30 +17,13 @@ Exercise:
     all the fields in the code.
 
 */
-
-interface User {
-    type: 'user';
-    name: string;
-    age: number;
-    occupation: string;
-}
-
-interface Admin {
-    type: 'admin';
-    name: string;
-    age: number;
-    role: string;
-}
-
-type PowerUser = Omit<User, 'type'> & Omit<Admin, 'type'> & {type: 'powerUser'};
-
-export type Person = User | Admin | PowerUser;
-
-export const persons: Person[] = [
-    {type: 'user', name: 'Max Mustermann', age: 25, occupation: 'Chimney sweep'},
-    {type: 'admin', name: 'Jane Doe', age: 32, role: 'Administrator'},
-    {type: 'user', name: 'Kate Müller', age: 23, occupation: 'Astronaut'},
-    {type: 'admin', name: 'Bruce Willis', age: 64, role: 'World saver'},
+exports.__esModule = true;
+exports.logPerson = exports.persons = void 0;
+exports.persons = [
+    { type: 'user', name: 'Max Mustermann', age: 25, occupation: 'Chimney sweep' },
+    { type: 'admin', name: 'Jane Doe', age: 32, role: 'Administrator' },
+    { type: 'user', name: 'Kate Müller', age: 23, occupation: 'Astronaut' },
+    { type: 'admin', name: 'Bruce Willis', age: 64, role: 'World saver' },
     {
         type: 'powerUser',
         name: 'Nikki Stone',
@@ -48,21 +32,17 @@ export const persons: Person[] = [
         occupation: 'Cat groomer'
     }
 ];
-
-function isAdmin(person: Person): person is Admin {
+function isAdmin(person) {
     return person.type === 'admin';
 }
-
-function isUser(person: Person): person is User {
+function isUser(person) {
     return person.type === 'user';
 }
-
-function isPowerUser(person: Person): person is PowerUser {
+function isPowerUser(person) {
     return person.type === 'powerUser';
 }
-
-export function logPerson(person: Person) {
-    let additionalInformation: string = '';
+function logPerson(person) {
+    var additionalInformation = '';
     if (isAdmin(person)) {
         additionalInformation = person.role;
     }
@@ -70,24 +50,19 @@ export function logPerson(person: Person) {
         additionalInformation = person.occupation;
     }
     if (isPowerUser(person)) {
-        additionalInformation = `${person.role}, ${person.occupation}`;
+        additionalInformation = "".concat(person.role, ", ").concat(person.occupation);
     }
-    console.log(`${person.name}, ${person.age}, ${additionalInformation}`);
+    console.log("".concat(person.name, ", ").concat(person.age, ", ").concat(additionalInformation));
 }
-
+exports.logPerson = logPerson;
 console.log('Admins:');
-persons.filter(isAdmin).forEach(logPerson);
-
+exports.persons.filter(isAdmin).forEach(logPerson);
 console.log();
-
 console.log('Users:');
-persons.filter(isUser).forEach(logPerson);
-
+exports.persons.filter(isUser).forEach(logPerson);
 console.log();
-
 console.log('Power users:');
-persons.filter(isPowerUser).forEach(logPerson);
-
+exports.persons.filter(isPowerUser).forEach(logPerson);
 // In case you are stuck:
 // https://www.typescriptlang.org/docs/handbook/utility-types.html
 // https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types
