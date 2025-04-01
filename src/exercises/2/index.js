@@ -1,3 +1,4 @@
+"use strict";
 /*
 
 Intro:
@@ -17,22 +18,9 @@ Exercise:
     all the TS errors.
 
 */
-
-interface User {
-    name: string;
-    age: number;
-    occupation: string;
-}
-
-interface Admin {
-    name: string;
-    age: number;
-    role: string;
-}
-
-export type Person = User | Admin;
-
-export const persons: Person[] /* <- Person[] */ = [
+exports.__esModule = true;
+exports.logPerson = exports.persons = void 0;
+exports.persons /* <- Person[] */ = [
     {
         name: 'Max Mustermann',
         age: 25,
@@ -54,12 +42,10 @@ export const persons: Person[] /* <- Person[] */ = [
         role: 'World saver'
     }
 ];
-
-export function logPerson(user: Person) {
-    console.log(` - ${user.name}, ${user.age}`);
+function logPerson(user) {
+    console.log(" - ".concat(user.name, ", ").concat(user.age));
 }
-
-persons.forEach(logPerson);
-
+exports.logPerson = logPerson;
+exports.persons.forEach(logPerson);
 // In case you are stuck:
 // https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types
