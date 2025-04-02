@@ -10,8 +10,8 @@ Intro:
     invent and publish some npm packages. Following the
     new trend of functional programming in JS we
     decided to develop a functional utility library.
-    This will put us on the bleading edge since we are
-    pretty much sure no one else did anything similar.
+    This will put us on the bleeding edge since we are
+    pretty sure no one else does anything similar.
     We also provided some jsdoc along with the
     functions, but it might sometimes be inaccurate.
 
@@ -28,6 +28,23 @@ Bonus:
 
 */
 
+function toFunctional<T extends Function>(func: T): Function {
+    const fullArgCount = func.length;
+    function createSubFunction(curriedArgs: unknown[]) {
+        return function (this: unknown) {
+            const newCurriedArguments = curriedArgs.concat(Array.from(arguments));
+            if (newCurriedArguments.length > fullArgCount) {
+                throw new Error('Too many arguments');
+            }
+            if (newCurriedArguments.length === fullArgCount) {
+                return func.apply(this, newCurriedArguments);
+            }
+            return createSubFunction(newCurriedArguments);
+        };
+    }
+    return createSubFunction([]);
+}
+
 /**
  * 2 arguments passed: returns a new array
  * which is a result of input being mapped using
@@ -43,20 +60,19 @@ Bonus:
  * @param {Array} input
  * @return {Array | Function}
  */
-export function map(mapper, input) {
-    if (arguments.length === 0) {
-        return map;
-    }
-    if (arguments.length === 1) {
-        return function subFunction(subInput) {
-            if (arguments.length === 0) {
-                return subFunction;
-            }
-            return subInput.map(mapper);
-        };
-    }
-    return input.map(mapper);
+
+interface MapperFunc<I, O> {
+    (): MapperFunc<I, O>;
+    (input: I[]): O[];
 }
+
+interface MapFunc {
+    (): MapFunc;
+    <I, O>(mapper: (item: I) => O): MapperFunc<I, O>;
+    <I, O>(mapper: (item: I) => O, input: I[]): O[];
+}
+
+export const map = toFunctional(<I, O>(func: (arg: I) => O, input: I[]) => input.map(func)) as MapFunc;
 
 /**
  * 2 arguments passed: returns a new array
@@ -74,20 +90,19 @@ export function map(mapper, input) {
  * @param {Array} input
  * @return {Array | Function}
  */
-export function filter(filterer, input) {
-    if (arguments.length === 0) {
-        return filter;
-    }
-    if (arguments.length === 1) {
-        return function subFunction(subInput) {
-            if (arguments.length === 0) {
-                return subFunction;
-            }
-            return subInput.filter(filterer);
-        };
-    }
-    return input.filter(filterer);
+
+interface FiltererFunc<I> {
+    (): FiltererFunc<I>;
+    (input: I[]): I[];
 }
+
+interface FilterFunc {
+    (): FilterFunc;
+    <I>(filterer: (item: I) => boolean): FiltererFunc<I>;
+    <I>(filterer: (item: I) => boolean, input: I[]): I[];
+}
+
+export const filter = toFunctional(<I>(func: (arg: I) => boolean, input: I[]) => input.filter(func)) as FilterFunc;
 
 /**
  * 3 arguments passed: reduces input array it using the
@@ -117,36 +132,28 @@ export function filter(filterer, input) {
  * @param {Array} input
  * @return {* | Function}
  */
-export function reduce(reducer, initialValue, input) {
-    if (arguments.length === 0) {
-        return reduce;
-    }
-    if (arguments.length === 1) {
-        return function subFunction(subInitialValue, subInput) {
-            if (arguments.length === 0) {
-                return subFunction;
-            }
-            if (arguments.length === 1) {
-                return function subSubFunction(subSubInput) {
-                    if (arguments.length === 0) {
-                        return subSubFunction;
-                    }
-                    return subSubInput.reduce(reducer, subInitialValue);
-                };
-            }
-            return subInput.reduce(reducer,subInitialValue);
-        }
-    }
-    if (arguments.length === 2) {
-        return function subFunction(subInput) {
-            if (arguments.length === 0) {
-                return subFunction;
-            }
-            return subInput.reduce(reducer, initialValue);
-        };
-    }
-    return input.reduce(reducer, initialValue);
+
+interface ReducerInitialFunc<I, O> {
+    (): ReducerInitialFunc<I, O>;
+    (input: I[]): O;
 }
+
+interface ReducerFunc<I, O> {
+    (): ReducerFunc<I, O>;
+    (initialValue: O): ReducerInitialFunc<I, O>;
+    (initialValue: O, input: I[]): O;
+}
+
+interface ReduceFunc {
+    (): ReduceFunc;
+    <I, O>(reducer: (acc: O, val: I) => O): ReducerFunc<I, O>;
+    <I, O>(reducer: (acc: O, val: I) => O, initialValue: O): ReducerInitialFunc<I, O>;
+    <I, O>(reducer: (acc: O, val: I) => O, initialValue: O, input: I[]): O;
+}
+
+export const reduce = toFunctional(<I, O>(reducer: (acc: O, val: I) => O, initialValue: O, input: I[]) =>
+    input.reduce(reducer, initialValue)
+) as ReduceFunc;
 
 /**
  * 2 arguments passed: returns sum of a and b.
@@ -160,20 +167,19 @@ export function reduce(reducer, initialValue, input) {
  * @param {Number} b
  * @return {Number | Function}
  */
-export function add(a, b) {
-    if (arguments.length === 0) {
-        return add;
-    }
-    if (arguments.length === 1) {
-        return function subFunction(subB) {
-            if (arguments.length === 0) {
-                return subFunction;
-            }
-            return a + subB;
-        };
-    }
-    return a + b;
+
+interface ArithmeticArgFunc {
+    (): ArithmeticArgFunc;
+    (b: number): number;
 }
+
+interface ArithmeticFunc {
+    (): ArithmeticFunc;
+    (a: number): ArithmeticArgFunc;
+    (a: number, b: number): number;
+}
+
+export const add = toFunctional((a: number, b: number) => a + b) as ArithmeticFunc;
 
 /**
  * 2 arguments passed: subtracts b from a and
@@ -188,20 +194,8 @@ export function add(a, b) {
  * @param {Number} b
  * @return {Number | Function}
  */
-export function subtract(a, b) {
-    if (arguments.length === 0) {
-        return subtract;
-    }
-    if (arguments.length === 1) {
-        return function subFunction(subB) {
-            if (arguments.length === 0) {
-                return subFunction;
-            }
-            return a - subB;
-        };
-    }
-    return a - b;
-}
+
+export const subtract = toFunctional((a: number, b: number) => a - b) as ArithmeticFunc;
 
 /**
  * 2 arguments passed: returns value of property
@@ -217,20 +211,19 @@ export function subtract(a, b) {
  * @param {String} propName
  * @return {* | Function}
  */
-export function prop(obj, propName) {
-    if (arguments.length === 0) {
-        return prop;
-    }
-    if (arguments.length === 1) {
-        return function subFunction(subPropName) {
-            if (arguments.length === 0) {
-                return subFunction;
-            }
-            return obj[subPropName];
-        };
-    }
-    return obj[propName];
+
+interface PropNameFunc<I extends string> {
+    (): PropNameFunc<I>;
+    <O extends {[key in I]: O[I]}>(obj: O): O[I];
 }
+
+interface PropFunc {
+    (): PropFunc;
+    <I extends string>(propName: I): PropNameFunc<I>;
+    <O, I extends keyof O>(propName: I, obj: O): O[I];
+}
+
+export const prop = toFunctional(<O, I extends keyof O>(obj: O, propName: I): O[I] => obj[propName]) as PropFunc;
 
 /**
  * >0 arguments passed: expects each argument to be
